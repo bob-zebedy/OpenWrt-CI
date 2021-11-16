@@ -1,0 +1,31 @@
+# https://github.com/deplives/OpenWrt-CI
+
+name: OpenWrt Trigger
+
+on:
+
+  workflow_dispatch:
+
+  schedule:
+
+    - cron: '0 0 1 * *'
+
+jobs:
+
+  schedule:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    
+      - name: Trigger build
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.OPENWRT_TRIGGER_PAT }}
+          event-type: OpenWrt Schedule
+
+      - name: Remove workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 1
