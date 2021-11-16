@@ -1,0 +1,187 @@
+# https://github.com/deplives/OpenWrt-CI
+
+
+name: OpenWrt Schedule
+
+
+on:
+
+  repository_dispatch:
+  
+    types: [OpenWrt Schedule]
+
+
+env:
+
+  REPO: https://github.com/deplives/lede.git
+  BRANCH: master
+  CONFIG: x86.config
+  FEEDS_SH: feeds.sh
+  FIRST_SH: first.sh
+  SECOND_SH: second.sh
+  TIMEZONE: Asia/Shanghai
+
+
+jobs:
+
+  Compile:
+
+    runs-on: ubuntu-20.04
+    
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Space cleanup
+        run: |
+          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php* android*
+          sudo rm -rf /etc/apt/sources.list.d /usr/share/dotnet /usr/local/lib/android /etc/mysql /etc/php /opt/ghc
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
+          df -hT $PWD
+
+      - name: Install dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        if: success() && !cancelled()
+        run: |
+          sudo timedatectl set-timezone "$TIMEZONE"
+          sudo -E apt-get update
+          sudo -E apt-get -y install $(curl -fsSL https://git.io/openwrt-ubuntu-2004)
+          sudo mkdir -p /workdir
+          sudo chown $USER:$GROUPS /workdir
+
+      - name: Clone source code
+        working-directory: /workdir
+        if: success() && !cancelled()
+        run: |
+          git clone $REPO -b $BRANCH openwrt
+          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+          cd openwrt
+          KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')
+          echo "COMMITHASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "KERNEL_PATCHVER=$KERNEL_PATCHVER" >> $GITHUB_ENV
+
+      - name: Cache
+        uses: deplives/cacheopenwrt@main
+        with:
+          ccache: true
+          prefix: ${{ github.workspace }}/openwrt
+
+      - name: Run feeds.sh
+        run: |
+          chmod +x $FEEDS_SH
+          cd openwrt
+          $GITHUB_WORKSPACE/$FEEDS_SH
+
+      - name: Update feeds
+        if: success() && !cancelled()
+        run: cd openwrt && ./scripts/feeds update -a
+
+      - name: Run first.sh
+        run: |
+          chmod +x $FIRST_SH
+          cd openwrt
+          $GITHUB_WORKSPACE/$FIRST_SH ${{ env.COMMITHASH }}
+      
+      - name: Install feeds
+        if: success() && !cancelled()
+        run: cd openwrt && ./scripts/feeds install -a
+
+      - name: Run second.sh
+        run: |
+          chmod +x $SECOND_SH
+          cd openwrt
+          $GITHUB_WORKSPACE/$SECOND_SH
+
+      - name: Restore configuration
+        if: success() && !cancelled()
+        run: |
+          [ -e files ] && mv files openwrt/files
+          [ -e $CONFIG ] && mv $CONFIG openwrt/.config
+
+      - name: Download package
+        if: success() && !cancelled()
+        run: |
+          cd openwrt
+          make defconfig
+          make download -j8
+          find dl -size -1024c -exec rm -f {} \;
+
+      - name: Job start
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            OpenWrt 自动编译开始
+            Kernel Version: ${{ env.KERNEL_PATCHVER }}
+            Commit Hash: ${{ env.COMMITHASH }}
+
+      - name: Compile firmware
+        if: success() && !cancelled()
+        run: |
+          cd openwrt
+          make -j$(nproc) || make -j1 V=sc
+
+      - name: Organize files
+        if: success() && !cancelled()
+        run: |
+          cd openwrt/bin/targets/*/*
+          shopt -s extglob
+          rm -rf !(*.img|*.vmdk)
+          shopt -u extglob
+          sha256sum * > sha256sum.txt
+          cp /workdir/openwrt/.config x86.config
+          echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+
+      - name: Generate release tag
+        id: tag
+        if: success() && !cancelled()
+        run: |
+          echo "::set-output name=release_tag::OpenWrt-$(date +'%Y%m')"
+          touch release.txt
+          echo "Kernel Version: ${{ env.KERNEL_PATCHVER }}" > release.txt
+          echo "Commit Hash: ${{ env.COMMITHASH }}" >> release.txt
+          
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: success() && !cancelled()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.release_tag }}
+          body_path: release.txt
+          files: ${{ env.FIRMWARE }}/*
+
+      - name: Remove workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 1
+
+      - name: Compile has succeeded
+        uses: appleboy/telegram-action@master
+        if: success() && !cancelled()
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            OpenWrt 自动编译完成
+            Kernel Version: ${{ env.KERNEL_PATCHVER }}
+            Commit Hash: ${{ env.COMMITHASH }}
+
+      - name: Compile has failed
+        uses: appleboy/telegram-action@master
+        if: failure()
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            OpenWrt 自动编译失败
+            Kernel Version: ${{ env.KERNEL_PATCHVER }}
+            Commit Hash: ${{ env.COMMITHASH }}
