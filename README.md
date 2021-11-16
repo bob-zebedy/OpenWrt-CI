@@ -4,8 +4,6 @@
 
 自用 x86 软路由 OpenWrt 稳定版固件
 
-如需测试固件请移步至 https://github.com/deplives/OpenWrt-CI-RC
-
 ## 固件特点
 
 - 内核大小 32MB; rootfs大小 256 MB
