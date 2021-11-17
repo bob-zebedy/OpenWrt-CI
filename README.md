@@ -1,6 +1,6 @@
 # OpenWrt-CI 
 
-![](https://img.shields.io/github/workflow/status/deplives/OpenWrt-CI/OpenWrt%20Schedule?event=repository_dispatch&label=%E8%87%AA%E5%8A%A8%E7%BC%96%E8%AF%91&style=flat-square)
+![](https://img.shields.io/github/workflow/status/deplives/OpenWrt-CI/OpenWrt%20Compile?label=%E8%87%AA%E5%8A%A8%E7%BC%96%E8%AF%91&style=flat-square)
 
 自用 x86 软路由 OpenWrt 稳定版固件
 
@@ -18,7 +18,6 @@
 - 修改默认 LAN IP 为 192.168.50.1
 - 首页新增 '编译版本' 和 '编译日期'
 - 修改默认 console banner 样式
-- 每月 1 日 00:00(UTC) 自动编译, 其余时间不定时手动触发编译
 
 ## 替换插件
 

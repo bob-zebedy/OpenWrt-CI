@@ -1,14 +1,12 @@
 # https://github.com/deplives/OpenWrt-CI
 
 
-name: OpenWrt Schedule
+name: OpenWrt Compile
 
 
 on:
 
-  repository_dispatch:
-  
-    types: [OpenWrt Schedule]
+  workflow_dispatch:
 
 
 env:
