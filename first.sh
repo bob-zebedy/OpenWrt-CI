@@ -61,7 +61,7 @@ sed -i "${line_kernel_version}a\                <tr><td width=\"33%\">编译版�
 # Add Build Date in Homepage
 echo 'Add Build Date in Homepage...'
 build_date=$(date +"%Y-%m-%d")
-line_build_version=$(grep -n "<tr><td width=\"33%\">编译版本</td><td>$1</td></tr>" package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
+line_build_version=$(grep -n "<tr><td width=\"33%\">编译版本</td><td>$1 (Stable)</td></tr>" package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
 sed -i "${line_build_version}a\                <tr><td width=\"33%\">编译日期</td><td>${build_date}</td></tr>" package/lean/autocore/files/x86/index.htm
 
 # Modify default banner
