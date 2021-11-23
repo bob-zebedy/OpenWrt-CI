@@ -55,13 +55,13 @@ sed -i 's/<td id="wan6_i" style="width:16px; text-align:center; padding:3px">/<t
 
 # Add Firmware Commit Hash in Homepage
 echo 'Add Firmware Commit Hash in Homepage...'
-line_kernel_version=$(grep -n '<tr><td width="33%"><%:Kernel Version%></td><td><%=unameinfo.release or "?"%></td></tr>' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
+line_kernel_version=$(grep -n 'Kernel Version' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
 sed -i "${line_kernel_version}a\                <tr><td width=\"33%\">编译版本</td><td>$1 (Stable)</td></tr>" package/lean/autocore/files/x86/index.htm
 
 # Add Build Date in Homepage
 echo 'Add Build Date in Homepage...'
 build_date=$(date +"%Y-%m-%d")
-line_build_version=$(grep -n "<tr><td width=\"33%\">编译版本</td><td>$1 (Stable)</td></tr>" package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
+line_build_version=$(grep -n '编译版本' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
 sed -i "${line_build_version}a\                <tr><td width=\"33%\">编译日期</td><td>${build_date}</td></tr>" package/lean/autocore/files/x86/index.htm
 
 # Modify default banner
