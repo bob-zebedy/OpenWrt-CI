@@ -6,7 +6,7 @@
 
 ## 固件特点
 
-- 内核大小 32MB; rootfs大小 256 MB
+- Kernel: 32 MB; rootfs: 256 MB
 - 替换/新增了某些默认插件
 - 修改默认主题为 argon
 - 修改默认 NTP 服务器
