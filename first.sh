@@ -22,13 +22,6 @@ sed -i 's/192.168.1.1/192.168.50.1/g' package/base-files/files/bin/config_genera
 echo 'Modify default theme...'
 sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
-# Modify default adbyby and luci-app-adbyby-plus
-# https://github.com/deplives/adbyby
-# https://github.com/deplives/luci-app-adbyby-plus
-echo 'Modify default adbyby and luci-app-adbyby-plus...'
-rm -rf package/lean/adbyby && git clone https://github.com/deplives/adbyby.git package/lean/adbyby
-rm -rf package/lean/luci-app-adbyby-plus && git clone https://github.com/deplives/luci-app-adbyby-plus.git package/lean/luci-app-adbyby-plus
-
 # Modify default luci-app-turboacc
 # https://github.com/deplives/luci-app-turboacc
 echo 'Modify default luci-app-turboacc...'
