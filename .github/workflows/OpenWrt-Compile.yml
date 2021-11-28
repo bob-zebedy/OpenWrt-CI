@@ -8,6 +8,10 @@ on:
 
   workflow_dispatch:
 
+  schedule:
+
+    - cron: '0 0 1 * *'
+
 
 env:
 
@@ -116,7 +120,7 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            OpenWrt 自动编译开始
+            OpenWrt 编译开始 (Stable)
             Kernel Version: ${{ env.KERNEL_PATCHVER }}
             Commit Hash: ${{ env.COMMITHASH }}
 
@@ -169,7 +173,7 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            OpenWrt 自动编译完成
+            OpenWrt 编译完成 (Stable)
             Kernel Version: ${{ env.KERNEL_PATCHVER }}
             Commit Hash: ${{ env.COMMITHASH }}
 
@@ -180,6 +184,6 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            OpenWrt 自动编译失败
+            OpenWrt 编译成功 (Stable)
             Kernel Version: ${{ env.KERNEL_PATCHVER }}
             Commit Hash: ${{ env.COMMITHASH }}
