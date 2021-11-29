@@ -57,6 +57,15 @@ build_date=$(date +"%Y-%m-%d")
 line_build_version=$(grep -n '编译版本' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
 sed -i "${line_build_version}a\                <tr><td width=\"33%\">编译日期</td><td>${build_date}</td></tr>" package/lean/autocore/files/x86/index.htm
 
+# Replace openwrt.org in diagnostics with www.baidu.com
+echo 'Replace openwrt.org in diagnostics.htm with www.baidu.com...'
+cat <<EOF >>package/lean/default-settings/files/zzz-default-settings
+uci set luci.diag.ping=www.baidu.com
+uci set luci.diag.route=www.baidu.com
+uci set luci.diag.dns=www.baidu.com
+uci commit luci
+EOF
+
 # Modify default banner
 echo 'Modify default banner...'
 echo "                                                               " >package/base-files/files/etc/banner
