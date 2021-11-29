@@ -59,11 +59,14 @@ sed -i "${line_build_version}a\                <tr><td width=\"33%\">编译日�
 
 # Replace openwrt.org in diagnostics with www.baidu.com
 echo 'Replace openwrt.org in diagnostics.htm with www.baidu.com...'
+sed -i "/exit 0/d" package/lean/default-settings/files/zzz-default-settings
 cat <<EOF >>package/lean/default-settings/files/zzz-default-settings
 uci set luci.diag.ping=www.baidu.com
 uci set luci.diag.route=www.baidu.com
 uci set luci.diag.dns=www.baidu.com
 uci commit luci
+
+exit 0
 EOF
 
 # Modify default banner
