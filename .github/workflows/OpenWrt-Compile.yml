@@ -16,7 +16,7 @@ on:
 env:
 
   REPO: https://github.com/deplives/lede.git
-  BRANCH: master
+  BRANCH: stable
   CONFIG: x86.config
   FEEDS_SH: feeds.sh
   FIRST_SH: first.sh
