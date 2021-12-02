@@ -6,11 +6,11 @@ name: OpenWrt Compile
 
 on:
 
-  workflow_dispatch:
-
   schedule:
-
+  
     - cron: '0 1 1 * *'
+
+  workflow_dispatch:
 
 
 env:
