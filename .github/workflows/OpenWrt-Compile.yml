@@ -64,9 +64,7 @@ jobs:
           git clone $REPO -b $BRANCH openwrt
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
           cd openwrt
-          KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')
           echo "COMMITHASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
-          echo "KERNEL_PATCHVER=$KERNEL_PATCHVER" >> $GITHUB_ENV
 
       - name: Cache
         uses: deplives/cacheopenwrt@main
@@ -121,7 +119,6 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             OpenWrt 编译开始 (Stable)
-            Kernel Version: ${{ env.KERNEL_PATCHVER }}
             Commit Hash: ${{ env.COMMITHASH }}
 
       - name: Compile firmware
@@ -147,7 +144,6 @@ jobs:
         run: |
           echo "::set-output name=release_tag::OpenWrt-$(date +'%Y%m%d')"
           touch release.txt
-          echo "Kernel Version: ${{ env.KERNEL_PATCHVER }}" > release.txt
           echo "Commit Hash: ${{ env.COMMITHASH }}" >> release.txt
           
       - name: Release
@@ -174,7 +170,6 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             OpenWrt 编译完成 (Stable)
-            Kernel Version: ${{ env.KERNEL_PATCHVER }}
             Commit Hash: ${{ env.COMMITHASH }}
 
       - name: Compile has failed
@@ -185,5 +180,4 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             OpenWrt 编译成功 (Stable)
-            Kernel Version: ${{ env.KERNEL_PATCHVER }}
             Commit Hash: ${{ env.COMMITHASH }}
