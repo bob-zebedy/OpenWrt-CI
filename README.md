@@ -21,8 +21,6 @@
 
 ## 替换插件
 
-- [adbyby](https://github.com/deplives/adbyby)
-- [luci-app-adbyby-plus](https://github.com/deplives/luci-app-adbyby-plus)
 - [luci-app-turboacc](https://github.com/deplives/luci-app-turboacc)
 - [ttyd](https://github.com/deplives/ttyd)
 - [luci-app-ttyd](https://github.com/deplives/luci-app-ttyd)
@@ -31,8 +29,3 @@
 
 - [阿里 DDNS](https://github.com/deplives/openwrt-package)
 - [IPSec VPN](https://github.com/deplives/openwrt-package)
-- [QoS 管理](https://github.com/deplives/openwrt-package)
-
-## 后续计划
-
-- [ ] 新增 自动更新 功能
