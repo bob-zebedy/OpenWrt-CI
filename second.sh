@@ -20,3 +20,14 @@ sed -i '/10.1.2.3/d' feeds/luci/modules/luci-mod-admin-full/luasrc/model/cbi/adm
 
 echo 'Delete rebind domain placeholder...'
 sed -i '/ihost.netflix.com/d' feeds/luci/modules/luci-mod-admin-full/luasrc/model/cbi/admin_network/dhcp.lua
+
+echo 'Add i18n in base.po...'
+cat <<EOF >>feeds/luci/modules/luci-base/po/zh-cn/base.po
+
+msgid "Build Version"
+msgstr "编译版本"
+
+msgid "Build Date"
+msgstr "编译日期"
+
+EOF
