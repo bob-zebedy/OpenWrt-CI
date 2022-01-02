@@ -93,6 +93,7 @@ jobs:
         run: cd openwrt && ./scripts/feeds update -a
 
       - name: Run first.sh
+        if: success() && !cancelled() && env.RUN == 'true'
         run: |
           chmod +x $FIRST_SH
           cd openwrt
