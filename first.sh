@@ -54,7 +54,7 @@ sed -i 's/<td id="wan6_i" style="width:16px; text-align:center; padding:3px">/<t
 # Add Firmware Commit Hash in Homepage
 echo 'Add Firmware Commit Hash in Homepage...'
 line_kernel_version=$(grep -n 'Kernel Version' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
-sed -i "${line_kernel_version}a\                <tr><td width=\"33%\"><%:Build Version%></td><td>$COMMIT_ID (Stable)</td></tr>" package/lean/autocore/files/x86/index.htm
+sed -i "${line_kernel_version}a\                <tr><td width=\"33%\"><%:Build Version%></td><td>Stable</td></tr>" package/lean/autocore/files/x86/index.htm
 
 # Add Build Date in Homepage
 echo 'Add Build Date in Homepage...'
@@ -84,7 +84,7 @@ echo "██║   ██║██╔═══╝ ██╔══╝  ██║�
 echo "╚██████╔╝██║     ███████╗██║ ╚████║╚███╔███╔╝██║  ██║   ██║    " >>package/base-files/files/etc/banner
 echo " ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═══╝ ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝    " >>package/base-files/files/etc/banner
 echo " ------------------------------------------------------------- " >>package/base-files/files/etc/banner
-echo " %D %C ${build_date} @Bobby                                    " >>package/base-files/files/etc/banner
+echo " %D %C ${build_date} Stable @Bobby                             " >>package/base-files/files/etc/banner
 echo " $COMMIT_ID                                                    " >>package/base-files/files/etc/banner
 echo " ------------------------------------------------------------- " >>package/base-files/files/etc/banner
 echo "                                                               " >>package/base-files/files/etc/banner
