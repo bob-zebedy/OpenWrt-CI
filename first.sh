@@ -5,7 +5,7 @@
 
 COMMIT_ID=$1
 if [ -z "$COMMIT_ID" ]; then
-    COMMIT_ID='?'
+    COMMIT_ID='Unknow'
 fi
 
 # Modify default timezone
