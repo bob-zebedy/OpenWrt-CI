@@ -159,12 +159,6 @@ jobs:
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
 
-      - name: Remove workflow runs
-        uses: Mattraks/delete-workflow-runs@main
-        with:
-          retain_days: 1
-          keep_minimum_runs: 1
-
       - name: Compile has succeeded
         uses: appleboy/telegram-action@master
         if: success() && !cancelled() && env.RUN == 'true'
@@ -184,3 +178,9 @@ jobs:
           message: |
             OpenWrt 编译成功 (Stable)
             Commit Hash: ${{ env.COMMITHASH }}
+
+      - name: Remove workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 1
