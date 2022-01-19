@@ -63,6 +63,7 @@ jobs:
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
           cd openwrt
           echo "COMMITHASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')" >> $GITHUB_ENV
 
       - name: Cache
         uses: deplives/cacheopenwrt@main
@@ -108,7 +109,6 @@ jobs:
           if [ $HTTPCODE != 200 ]; then
             [ -e $CONFIG ] && mv $CONFIG openwrt/.config
           fi
-          echo "KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')" >> $GITHUB_ENV
 
       - name: Download package
         if: success() && !cancelled() && env.RUN == 'true'
