@@ -126,6 +126,7 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             OpenWrt 编译开始 (Stable)
+            Kernel Patchver: ${{ env.KERNEL_PATCHVER }}
             Commit Hash: ${{ env.COMMITHASH }}
 
       - name: Compile firmware
@@ -172,6 +173,7 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             OpenWrt 编译完成 (Stable)
+            Kernel Patchver: ${{ env.KERNEL_PATCHVER }}
             Commit Hash: ${{ env.COMMITHASH }}
 
       - name: Compile has failed
@@ -182,6 +184,7 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             OpenWrt 编译成功 (Stable)
+            Kernel Patchver: ${{ env.KERNEL_PATCHVER }}
             Commit Hash: ${{ env.COMMITHASH }}
 
       - name: Remove workflow runs
