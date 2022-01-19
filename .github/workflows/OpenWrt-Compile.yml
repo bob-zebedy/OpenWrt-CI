@@ -31,7 +31,7 @@ jobs:
 
       - name: Check date
         run: |
-          if [ "01" = "$(date +%d -d "+1day")" ]; then
+          if [ "01" = "$(date +%d -d '+1day')" ]; then
             echo "RUN=true" >> $GITHUB_ENV
           fi
 
