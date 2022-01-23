@@ -51,6 +51,10 @@ sed -i 's/<td id="wan4_i" style="width:16px; text-align:center; padding:3px">/<t
 echo 'Modify admin/status/overview <td id="wan6_i" style="width:16px; text-align:center; padding:3px">...'
 sed -i 's/<td id="wan6_i" style="width:16px; text-align:center; padding:3px">/<td id="wan6_i" style="width:10%; text-align:center; padding:3px">/g' package/lean/autocore/files/x86/index.htm
 
+# Modify localtime in Homepage
+echo 'Modify localtime in Homepage...'
+sed -i 's/os.date()/os.date("%Y-%m-%d %H:%M:%S")/g' package/lean/autocore/files/x86/index.htm
+
 # Add Firmware Commit Hash in Homepage
 echo 'Add Firmware Commit Hash in Homepage...'
 line_kernel_version=$(grep -n 'Kernel Version' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
