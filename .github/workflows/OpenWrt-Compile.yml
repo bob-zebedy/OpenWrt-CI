@@ -173,7 +173,7 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            OpenWrt 编译完成 (Stable)
+            OpenWrt 编译成功 (Stable)
             Kernel Patchver: ${{ env.KERNEL_PATCHVER }}
             Commit Hash: ${{ env.COMMITHASH }}
 
@@ -184,7 +184,7 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            OpenWrt 编译成功 (Stable)
+            OpenWrt 编译失败 (Stable)
             Kernel Patchver: ${{ env.KERNEL_PATCHVER }}
             Commit Hash: ${{ env.COMMITHASH }}
 
