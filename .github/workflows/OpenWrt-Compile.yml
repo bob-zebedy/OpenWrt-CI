@@ -107,6 +107,7 @@ jobs:
           [ -e files ] && mv files openwrt/files
           HTTPCODE=$(curl -s -w "%{http_code}" "${{ secrets.REMOTE_CONFIG_URL }}/$CONFIG" -o openwrt/.config)
           if [ $HTTPCODE != 200 ]; then
+            echo 'Get remote config failed!'
             [ -e $CONFIG ] && mv $CONFIG openwrt/.config
           fi
 
