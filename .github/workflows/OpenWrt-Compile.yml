@@ -104,12 +104,8 @@ jobs:
       - name: Restore configuration
         if: success() && !cancelled() && env.RUN == 'true'
         run: |
+          [ -e $CONFIG ] && mv $CONFIG openwrt/.config
           [ -e files ] && mv files openwrt/files
-          HTTPCODE=$(curl -s -w "%{http_code}" "${{ secrets.REMOTE_CONFIG_URL }}/$CONFIG" -o openwrt/.config)
-          if [ $HTTPCODE != 200 ]; then
-            echo 'Get remote config failed!'
-            [ -e $CONFIG ] && mv $CONFIG openwrt/.config
-          fi
 
       - name: Download package
         if: success() && !cancelled() && env.RUN == 'true'
