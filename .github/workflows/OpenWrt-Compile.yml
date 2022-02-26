@@ -3,6 +3,8 @@
 name: OpenWrt Compile
 
 on:
+  schedule:
+    - cron: "0 17 */1 * *"
 
   workflow_dispatch:
 
@@ -29,7 +31,9 @@ jobs:
 
       - name: Check date
         run: |
-          echo "RUN=true" >> $GITHUB_ENV
+          if [ "01" = "$(date +%d -d '+1day')" ]; then
+            echo "RUN=true" >> $GITHUB_ENV
+          fi
 
       - name: Space cleanup
         if: success() && !cancelled() && env.RUN == 'true'
