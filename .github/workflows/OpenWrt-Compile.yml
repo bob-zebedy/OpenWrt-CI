@@ -42,6 +42,7 @@ jobs:
           sudo rm -rf /etc/apt/sources.list.d /usr/share/dotnet /usr/local/lib/android /etc/mysql /etc/php /opt/ghc
           sudo -E apt-get -y autoremove --purge
           sudo -E apt-get clean
+          docker rmi $(docker images -q)
           df -hT $PWD
 
       - name: Install dependencies
@@ -120,15 +121,9 @@ jobs:
           find dl -size -1024c -exec rm -f {} \;
 
       - name: Job start
-        uses: appleboy/telegram-action@master
         if: success() && !cancelled() && env.RUN == 'true'
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            OpenWrt 编译开始 (Stable)
-            Kernel Patchver: ${{ env.KERNEL_PATCHVER }}
-            Commit Hash: ${{ env.COMMITHASH }}
+        run: |
+          curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译开始(${{ env.KERNEL_PATCHVER }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
 
       - name: Compile firmware
         if: success() && !cancelled() && env.RUN == 'true'
@@ -167,26 +162,14 @@ jobs:
           files: ${{ env.FIRMWARE }}/*
 
       - name: Compile has succeeded
-        uses: appleboy/telegram-action@master
         if: success() && !cancelled() && env.RUN == 'true'
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            OpenWrt 编译成功 (Stable)
-            Kernel Patchver: ${{ env.KERNEL_PATCHVER }}
-            Commit Hash: ${{ env.COMMITHASH }}
+        run: |
+          curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译成功(${{ env.KERNEL_PATCHVER }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
 
       - name: Compile has failed
-        uses: appleboy/telegram-action@master
         if: failure() && env.RUN == 'true'
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            OpenWrt 编译失败 (Stable)
-            Kernel Patchver: ${{ env.KERNEL_PATCHVER }}
-            Commit Hash: ${{ env.COMMITHASH }}
+        run: |
+          curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译失败(${{ env.KERNEL_PATCHVER }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
 
       - name: Remove workflow runs
         uses: Mattraks/delete-workflow-runs@main
