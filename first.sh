@@ -60,8 +60,8 @@ echo 'Add Build Version in Homepage...'
 line_kernel_version=$(grep -n 'Kernel Version' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
 sed -i "${line_kernel_version}a\                <tr><td width=\"33%\"><%:Build Version%></td><td>Stable</td></tr>" package/lean/autocore/files/x86/index.htm
 
+# Modify hostname in Homepage
 echo 'Modify hostname...'
-h=${g}' - '${a}${b}${c}${d}${e}${f}
 sed -i 's/${g}'"'"' - '"'"'//g' package/lean/autocore/files/x86/autocore
 
 # Add Build Date in Homepage
