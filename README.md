@@ -4,6 +4,8 @@
 
 自用 x86 软路由 OpenWrt 稳定版固件
 
+UTC 时间每个月末最后一天 18:00 自动编译
+
 ## 固件特点
 
 - Kernel: 32 MB; rootfs: 256 MB
@@ -18,14 +20,3 @@
 - 修改默认 LAN IP 为 192.168.50.1
 - 首页新增 '编译版本' 和 '编译日期'
 - 修改默认 console banner 样式
-
-## 替换插件
-
-- [luci-app-turboacc](https://github.com/deplives/luci-app-turboacc)
-- [ttyd](https://github.com/deplives/ttyd)
-- [luci-app-ttyd](https://github.com/deplives/luci-app-ttyd)
-
-## 新增插件
-
-- [阿里 DDNS](https://github.com/deplives/openwrt-package)
-- [IPSec VPN](https://github.com/deplives/openwrt-package)
