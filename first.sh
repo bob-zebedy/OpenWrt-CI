@@ -55,10 +55,14 @@ sed -i 's/<td id="wan6_i" style="width:16px; text-align:center; padding:3px">/<t
 echo 'Modify localtime in Homepage...'
 sed -i 's/os.date()/os.date("%Y-%m-%d %H:%M:%S")/g' package/lean/autocore/files/x86/index.htm
 
-# Add Firmware Commit Hash in Homepage
-echo 'Add Firmware Commit Hash in Homepage...'
+# Add Build Version in Homepage
+echo 'Add Build Version in Homepage...'
 line_kernel_version=$(grep -n 'Kernel Version' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
 sed -i "${line_kernel_version}a\                <tr><td width=\"33%\"><%:Build Version%></td><td>Stable</td></tr>" package/lean/autocore/files/x86/index.htm
+
+echo 'Modify hostname...'
+h=${g}' - '${a}${b}${c}${d}${e}${f}
+sed -i 's/${g}'"'"' - '"'"'//g' package/lean/autocore/files/x86/autocore
 
 # Add Build Date in Homepage
 echo 'Add Build Date in Homepage...'
