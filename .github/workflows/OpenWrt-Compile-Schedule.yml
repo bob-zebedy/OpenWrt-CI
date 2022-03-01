@@ -1,0 +1,176 @@
+# https://github.com/deplives/OpenWrt-CI
+
+name: OpenWrt Compile Schedule
+
+on:
+  schedule:
+    - cron: "0 17 */1 * *"
+
+env:
+  REPO: https://github.com/deplives/lede.git
+  BRANCH: master
+  CONFIG: x86.stable.config
+  FEEDS_SH: feeds.sh
+  FIRST_SH: first.sh
+  SECOND_SH: second.sh
+  TIMEZONE: Asia/Shanghai
+  RUN: false
+
+jobs:
+  Compile:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Check date
+        run: |
+          if [ "01" = "$(date +%d -d '+1day')" ]; then
+            echo "RUN=true" >> $GITHUB_ENV
+          fi
+
+      - name: Space cleanup
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php* android*
+          sudo rm -rf /etc/apt/sources.list.d /usr/share/dotnet /usr/local/lib/android /etc/mysql /etc/php /opt/ghc
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
+          docker rmi $(docker images -q)
+          df -hT $PWD
+
+      - name: Install dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          sudo timedatectl set-timezone "$TIMEZONE"
+          sudo -E apt-get update
+          sudo -E apt-get -y install $(curl -fsSL https://git.io/openwrt-ubuntu-2004)
+          sudo mkdir -p /workdir
+          sudo chown $USER:$GROUPS /workdir
+
+      - name: Clone source code
+        working-directory: /workdir
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          git clone $REPO -b $BRANCH openwrt
+          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+          cd openwrt
+          echo "COMMITHASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')" >> $GITHUB_ENV
+
+      - name: Cache
+        uses: deplives/cacheopenwrt@main
+        if: success() && !cancelled() && env.RUN == 'true'
+        with:
+          ccache: true
+          prefix: ${{ github.workspace }}/openwrt
+
+      - name: Run feeds.sh
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          chmod +x $FEEDS_SH
+          cd openwrt
+          $GITHUB_WORKSPACE/$FEEDS_SH
+
+      - name: Update feeds
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: cd openwrt && ./scripts/feeds update -a
+
+      - name: Run first.sh
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          chmod +x $FIRST_SH
+          cd openwrt
+          $GITHUB_WORKSPACE/$FIRST_SH ${{ env.COMMITHASH }}
+
+      - name: Install feeds
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: cd openwrt && ./scripts/feeds install -a
+
+      - name: Run second.sh
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          chmod +x $SECOND_SH
+          cd openwrt
+          $GITHUB_WORKSPACE/$SECOND_SH
+
+      - name: Restore configuration
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          [ -e files ] && mv files openwrt/files
+          HTTPCODE=$(curl -s -w "%{http_code}" "${{ secrets.REMOTE_CONFIG_URL }}/$CONFIG" -o openwrt/.config)
+          if [ $HTTPCODE != 200 ]; then
+            echo 'Get remote config failed!'
+            [ -e $CONFIG ] && mv $CONFIG openwrt/.config
+          fi
+
+      - name: Download package
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          cd openwrt
+          make defconfig
+          make download -j8
+          find dl -size -1024c -exec rm -f {} \;
+
+      - name: Job start
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译开始(${{ env.KERNEL_PATCHVER }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
+
+      - name: Compile firmware
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          cd openwrt
+          make -j$(nproc) || make -j1 V=sc
+
+      - name: Organize files
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          cd openwrt/bin/targets/*/*
+          shopt -s extglob
+          rm -rf !(*.img|*.vmdk)
+          shopt -u extglob
+          sha256sum * > sha256sum.txt
+          cp /workdir/openwrt/.config $CONFIG
+          echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+
+      - name: Generate release tag
+        id: tag
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          echo "::set-output name=release_tag::OpenWrt-$(date +'%Y%m%d')"
+          touch release.txt
+          echo "Kernel Patchver: ${{ env.KERNEL_PATCHVER }}" >> release.txt
+          echo "Commit Hash: ${{ env.COMMITHASH }}" >> release.txt
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: success() && !cancelled() && env.RUN == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.release_tag }}
+          body_path: release.txt
+          files: ${{ env.FIRMWARE }}/*
+
+      - name: Compile has succeeded
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译成功(${{ env.KERNEL_PATCHVER }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
+
+      - name: Compile has failed
+        if: failure() && env.RUN == 'true'
+        run: |
+          curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译失败(${{ env.KERNEL_PATCHVER }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
+
+      - name: Remove workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 1
