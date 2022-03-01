@@ -60,15 +60,15 @@ echo 'Add Build Version in Homepage...'
 line_kernel_version=$(grep -n 'Kernel Version' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
 sed -i "${line_kernel_version}a\                <tr><td width=\"33%\"><%:Build Version%></td><td>Stable</td></tr>" package/lean/autocore/files/x86/index.htm
 
-# Modify hostname in Homepage
-echo 'Modify hostname...'
-sed -i 's/${g}'"'"' - '"'"'//g' package/lean/autocore/files/x86/autocore
-
 # Add Build Date in Homepage
 echo 'Add Build Date in Homepage...'
 build_date=$(date +"%Y-%m-%d")
 line_build_version=$(grep -n 'Build Version' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
 sed -i "${line_build_version}a\                <tr><td width=\"33%\"><%:Build Date%></td><td>${build_date}</td></tr>" package/lean/autocore/files/x86/index.htm
+
+# Modify hostname in Homepage
+echo 'Modify hostname...'
+sed -i 's/${g}'"'"' - '"'"'//g' package/lean/autocore/files/x86/autocore
 
 # Replace openwrt.org in diagnostics with www.baidu.com
 echo 'Replace openwrt.org in diagnostics.htm with www.baidu.com...'
