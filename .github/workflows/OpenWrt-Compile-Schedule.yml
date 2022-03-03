@@ -62,7 +62,9 @@ jobs:
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
           cd openwrt
           echo "COMMITHASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
-          echo "KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')" >> $GITHUB_ENV
+          KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')
+          KERNEL=$KERNEL_PATCHVER$(cat include/kernel-"$KERNEL_PATCHVER" | grep LINUX_VERSION | awk -F '= ' '{print $2}')
+          echo "KERNEL=$KERNEL" >> $GITHUB_ENV
 
       - name: Cache
         uses: deplives/cacheopenwrt@main
@@ -121,7 +123,7 @@ jobs:
       - name: Job start
         if: success() && !cancelled() && env.RUN == 'true'
         run: |
-          curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译开始(${{ env.KERNEL_PATCHVER }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
+          curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译开始(${{ env.KERNEL }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
 
       - name: Compile firmware
         if: success() && !cancelled() && env.RUN == 'true'
@@ -146,7 +148,7 @@ jobs:
         run: |
           echo "::set-output name=release_tag::OpenWrt-$(date +'%Y%m%d')"
           touch release.txt
-          echo "Kernel Patchver: ${{ env.KERNEL_PATCHVER }}" >> release.txt
+          echo "Kernel Version: ${{ env.KERNEL }}" >> release.txt
           echo "Commit Hash: ${{ env.COMMITHASH }}" >> release.txt
 
       - name: Release
@@ -162,12 +164,12 @@ jobs:
       - name: Compile has succeeded
         if: success() && !cancelled() && env.RUN == 'true'
         run: |
-          curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译成功(${{ env.KERNEL_PATCHVER }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
+          curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译成功(${{ env.KERNEL }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
 
       - name: Compile has failed
         if: failure() && env.RUN == 'true'
         run: |
-          curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译失败(${{ env.KERNEL_PATCHVER }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
+          curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译失败(${{ env.KERNEL }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
 
       - name: Remove workflow runs
         uses: Mattraks/delete-workflow-runs@main
