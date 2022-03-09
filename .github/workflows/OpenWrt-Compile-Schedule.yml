@@ -10,9 +10,9 @@ env:
   REPO: https://github.com/deplives/lede.git
   BRANCH: master
   CONFIG: x86.stable.config
-  FEEDS_SH: feeds.sh
   FIRST_SH: first.sh
   SECOND_SH: second.sh
+  THIRD_SH: third.sh
   TIMEZONE: Asia/Shanghai
   RUN: false
 
@@ -73,34 +73,34 @@ jobs:
           ccache: true
           prefix: ${{ github.workspace }}/openwrt
 
-      - name: Run feeds.sh
-        if: success() && !cancelled() && env.RUN == 'true'
-        run: |
-          chmod +x $FEEDS_SH
-          cd openwrt
-          $GITHUB_WORKSPACE/$FEEDS_SH
-
-      - name: Update feeds
-        if: success() && !cancelled() && env.RUN == 'true'
-        run: cd openwrt && ./scripts/feeds update -a
-
       - name: Run first.sh
         if: success() && !cancelled() && env.RUN == 'true'
         run: |
           chmod +x $FIRST_SH
           cd openwrt
-          $GITHUB_WORKSPACE/$FIRST_SH ${{ env.COMMITHASH }}
+          $GITHUB_WORKSPACE/$FIRST_SH
 
-      - name: Install feeds
+      - name: Update feeds
         if: success() && !cancelled() && env.RUN == 'true'
-        run: cd openwrt && ./scripts/feeds install -a
+        run: cd openwrt && ./scripts/feeds update -a
 
       - name: Run second.sh
         if: success() && !cancelled() && env.RUN == 'true'
         run: |
           chmod +x $SECOND_SH
           cd openwrt
-          $GITHUB_WORKSPACE/$SECOND_SH
+          $GITHUB_WORKSPACE/$SECOND_SH ${{ env.COMMITHASH }}
+
+      - name: Install feeds
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: cd openwrt && ./scripts/feeds install -a
+
+      - name: Run third.sh
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          chmod +x $THIRD_SH
+          cd openwrt
+          $GITHUB_WORKSPACE/$THIRD_SH
 
       - name: Restore configuration
         if: success() && !cancelled() && env.RUN == 'true'
