@@ -14,7 +14,7 @@ env:
   SECOND_SH: second.sh
   THIRD_SH: third.sh
   TIMEZONE: Asia/Shanghai
-  KERNEL: 5.10
+  KERNEL: "5.10"
   RUN: false
 
 jobs:
