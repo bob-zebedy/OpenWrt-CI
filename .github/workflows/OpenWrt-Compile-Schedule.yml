@@ -72,7 +72,7 @@ jobs:
           prefix: ${{ github.workspace }}/openwrt
 
       - name: Switch kernel
-        if: success() && !cancelled()
+        if: success() && !cancelled() && env.RUN == 'true'
         run: |
           cd openwrt
           if [ ${{ env.KERNEL }} != 'default' ]; then
