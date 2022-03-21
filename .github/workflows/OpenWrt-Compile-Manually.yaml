@@ -54,7 +54,7 @@ jobs:
           git clone $REPO -b $BRANCH openwrt
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
           cd openwrt
-          echo "COMMITHASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "COMMITSHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Cache
         uses: deplives/cacheopenwrt@main
@@ -94,7 +94,7 @@ jobs:
         run: |
           chmod +x $SECOND_SH
           cd openwrt
-          $GITHUB_WORKSPACE/$SECOND_SH ${{ env.COMMITHASH }}
+          $GITHUB_WORKSPACE/$SECOND_SH ${{ env.COMMITSHA }}
 
       - name: Install feeds
         if: success() && !cancelled()
@@ -129,6 +129,7 @@ jobs:
         if: success() && !cancelled()
         run: |
           curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译开始(${{ env.KERNEL_VERSION }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
+          curl -s "https://api.telegram.org/${{ secrets.TELEGRAM_TOKEN }}/sendMessage" --header "Content-Type: application/json" --data-raw "{\"chat_id\": \"${{ secrets.TELEGRAM_TO }}\",\"text\": \"OpenWrt 编译(stable)\n状态: 正在进行\nKernel Version: ${{ env.KERNEL_VERSION }}\nCommit SHA: ${{ env.COMMITSHA }}\"}"
 
       - name: Compile firmware
         if: success() && !cancelled()
@@ -154,7 +155,7 @@ jobs:
           echo "::set-output name=release_tag::OpenWrt-$(date +'%Y%m%d')"
           touch release.txt
           echo "Kernel Version: ${{ env.KERNEL_VERSION }}" >> release.txt
-          echo "Commit Hash: ${{ env.COMMITHASH }}" >> release.txt
+          echo "Commit SHA: ${{ env.COMMITSHA }}" >> release.txt
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -170,11 +171,13 @@ jobs:
         if: success() && !cancelled()
         run: |
           curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译成功(${{ env.KERNEL_VERSION }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
+          curl -s "https://api.telegram.org/${{ secrets.TELEGRAM_TOKEN }}/sendMessage" --header "Content-Type: application/json" --data-raw "{\"chat_id\": \"${{ secrets.TELEGRAM_TO }}\",\"text\": \"OpenWrt 编译(stable)\n状态: 成功\nKernel Version: ${{ env.KERNEL_VERSION }}\nCommit SHA: ${{ env.COMMITSHA }}\"}"
 
       - name: Compile has failed
         if: failure()
         run: |
           curl -s "${{ secrets.BARK_URL }}/GitHub%20Action/仓库:%20deplives%2FOpenWrt-CI%0a状态:%20编译失败(${{ env.KERNEL_VERSION }} stable)?group=OpenWrt&icon=https://blog.zebedy.com/images/avatar.jpg"
+          curl -s "https://api.telegram.org/${{ secrets.TELEGRAM_TOKEN }}/sendMessage" --header "Content-Type: application/json" --data-raw "{\"chat_id\": \"${{ secrets.TELEGRAM_TO }}\",\"text\": \"OpenWrt 编译(stable)\n状态: 失败\nKernel Version: ${{ env.KERNEL_VERSION }}\nCommit SHA: ${{ env.COMMITSHA }}\"}"
 
       - name: Remove workflow runs
         uses: Mattraks/delete-workflow-runs@main
