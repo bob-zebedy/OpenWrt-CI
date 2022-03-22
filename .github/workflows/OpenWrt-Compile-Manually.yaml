@@ -12,7 +12,7 @@ env:
   FIRST_SH: first.sh
   SECOND_SH: second.sh
   THIRD_SH: third.sh
-  KERNEL: "5.10"
+  KERNEL: "default"
   TIMEZONE: Asia/Shanghai
 
 jobs:
