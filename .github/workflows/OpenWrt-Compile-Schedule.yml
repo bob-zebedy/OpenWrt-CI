@@ -13,6 +13,7 @@ env:
   FIRST_SH: first.sh
   SECOND_SH: second.sh
   THIRD_SH: third.sh
+  PATCHES_SH: patches.sh
   TIMEZONE: Asia/Shanghai
   KERNEL: "default"
   RUN: false
@@ -96,6 +97,12 @@ jobs:
       - name: Update feeds
         if: success() && !cancelled() && env.RUN == 'true'
         run: cd openwrt && ./scripts/feeds update -a
+
+      - name: Run patches.sh
+        if: success() && !cancelled() && env.RUN == 'true'
+        run: |
+          chmod +x $PATCHES_SH
+          $GITHUB_WORKSPACE/$PATCHES_SH
 
       - name: Run second.sh
         if: success() && !cancelled() && env.RUN == 'true'
