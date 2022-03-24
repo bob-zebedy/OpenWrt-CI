@@ -64,21 +64,6 @@ jobs:
           ccache: true
           prefix: ${{ github.workspace }}/openwrt
 
-      - name: Switch kernel
-        if: success() && !cancelled()
-        run: |
-          cd openwrt
-          if [ ${{ env.KERNEL }} != 'default' ]; then
-            CURRENT_KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')
-            CURRNET_KERNEL_TESTING_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_TESTING_PATCHVER | awk -F ':=' '{print $2}')
-            sed -i "s/KERNEL_PATCHVER:=$CURRENT_KERNEL_PATCHVER/KERNEL_PATCHVER:=${{ env.KERNEL }}/g" target/linux/x86/Makefile
-            sed -i "s/KERNEL_TESTING_PATCHVER:=$CURRNET_KERNEL_TESTING_PATCHVER/KERNEL_TESTING_PATCHVER:=${{ env.KERNEL }}/g" target/linux/x86/Makefile
-          fi
-          KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')
-          KERNEL_VERSION=$KERNEL_PATCHVER$(cat include/kernel-"$KERNEL_PATCHVER" | grep LINUX_VERSION | awk -F '= ' '{print $2}')
-          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
-          echo "${{ env.KERNEL_VERSION }}"
-
       - name: Run first.sh
         if: success() && !cancelled()
         run: |
@@ -124,6 +109,19 @@ jobs:
             [ -e $CONFIG ] && mv $CONFIG openwrt/.config
           fi
 
+      - name: Switch kernel
+        if: success() && !cancelled()
+        run: |
+          cd openwrt
+          if [ ${{ env.KERNEL }} != 'default' ]; then
+            CURRENT_KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')
+            CURRNET_KERNEL_TESTING_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_TESTING_PATCHVER | awk -F ':=' '{print $2}')
+            CONFIG_KERNEL_PATCHVER=$(echo "${{ env.KERNEL }}" | sed 's/\./_/g')
+            sed -i "s/KERNEL_PATCHVER:=$CURRENT_KERNEL_PATCHVER/KERNEL_PATCHVER:=${{ env.KERNEL }}/g" target/linux/x86/Makefile
+            sed -i "s/KERNEL_TESTING_PATCHVER:=$CURRNET_KERNEL_TESTING_PATCHVER/KERNEL_TESTING_PATCHVER:=${{ env.KERNEL }}/g" target/linux/x86/Makefile
+            sed -i "s/CONFIG_LINUX.*/CONFIG_LINUX_${CONFIG_KERNEL_PATCHVER}=y/g" .config
+          fi
+
       - name: Download package
         if: success() && !cancelled()
         run: |
@@ -141,6 +139,10 @@ jobs:
         if: success() && !cancelled()
         run: |
           cd openwrt
+          KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')
+          KERNEL_VERSION=$KERNEL_PATCHVER$(cat include/kernel-"$KERNEL_PATCHVER" | grep LINUX_VERSION | awk -F '= ' '{print $2}')
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
+          echo "Start compile ${{ env.KERNEL_VERSION }} ${{ env.COMMITSHA }}"
           make -j$(nproc) || make -j1 V=sc
 
       - name: Organize files
