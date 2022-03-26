@@ -32,12 +32,10 @@ sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/M
 echo 'Modify default luci-app-turboacc...'
 rm -rf package/lean/luci-app-turboacc && git clone https://github.com/deplives/luci-app-turboacc.git package/lean/luci-app-turboacc
 
-# Modify default ttyd and luci-app-ttyd
+# Modify default ttyd
 # https://github.com/deplives/ttyd
-# https://github.com/deplives/luci-app-ttyd
-echo 'Modify default ttyd and luci-app-ttyd...'
+echo 'Modify default ttyd...'
 rm -rf feeds/packages/utils/ttyd && git clone https://github.com/deplives/ttyd.git feeds/packages/utils/ttyd
-rm -rf package/lean/luci-app-ttyd && git clone https://github.com/deplives/luci-app-ttyd.git package/lean/luci-app-ttyd
 
 # Modify zzz-default-settings
 echo 'Delete `sed -i 's#downloads.openwrt.org#mirrors.cloud.tencent.com/lede#g' /etc/opkg/distfeeds.conf`...'
