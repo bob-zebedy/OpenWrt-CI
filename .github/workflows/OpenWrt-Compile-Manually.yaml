@@ -130,11 +130,6 @@ jobs:
           make download -j8
           find dl -size -1024c -exec rm -f {} \;
 
-      - name: Job start
-        if: success() && !cancelled()
-        run: |
-          curl -s "https://api.telegram.org/${{ secrets.TELEGRAM_TOKEN }}/sendMessage" --header "Content-Type: application/json" --data-raw "{\"chat_id\": \"${{ secrets.TELEGRAM_TO }}\",\"text\": \"OpenWrt 编译(stable)\n状态: 正在进行\nKernel Version: ${{ env.KERNEL_VERSION }}\nCommit SHA: ${{ env.COMMITSHA }}\"}"
-
       - name: Compile firmware
         if: success() && !cancelled()
         run: |
@@ -143,6 +138,7 @@ jobs:
           KERNEL_VERSION=$KERNEL_PATCHVER$(cat include/kernel-"$KERNEL_PATCHVER" | grep LINUX_VERSION | awk -F '= ' '{print $2}')
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
           echo "Start compile ${{ env.KERNEL_VERSION }} ${{ env.COMMITSHA }}"
+          curl -s "https://api.telegram.org/${{ secrets.TELEGRAM_TOKEN }}/sendMessage" --header "Content-Type: application/json" --data-raw "{\"chat_id\": \"${{ secrets.TELEGRAM_TO }}\",\"text\": \"OpenWrt 编译(stable)\n状态: 正在进行\nKernel Version: ${{ env.KERNEL_VERSION }}\nCommit SHA: ${{ env.COMMITSHA }}\"}"
           make -j$(nproc) || make -j1 V=sc
 
       - name: Organize files
