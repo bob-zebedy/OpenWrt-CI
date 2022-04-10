@@ -4,6 +4,11 @@ name: OpenWrt Compile Manually
 
 on:
   workflow_dispatch:
+    inputs:
+      kernel:
+        description: "kernel"
+        required: false
+        default: "default"
 
 env:
   REPO: https://github.com/deplives/lede.git
@@ -13,7 +18,7 @@ env:
   SECOND_SH: second.sh
   THIRD_SH: third.sh
   PATCHES_SH: patches.sh
-  KERNEL: "default"
+  KERNEL: "${{ github.event.inputs.kernel }}"
   TIMEZONE: Asia/Shanghai
 
 jobs:
