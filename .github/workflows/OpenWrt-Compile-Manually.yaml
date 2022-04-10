@@ -7,7 +7,7 @@ on:
     inputs:
       kernel:
         description: "kernel"
-        required: false
+        required: true
         default: "default"
 
 env:
