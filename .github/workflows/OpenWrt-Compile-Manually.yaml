@@ -81,7 +81,7 @@ jobs:
         run: cd openwrt && ./scripts/feeds update -a
 
       - name: Run patches.sh
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           chmod +x $PATCHES_SH
           $GITHUB_WORKSPACE/$PATCHES_SH
