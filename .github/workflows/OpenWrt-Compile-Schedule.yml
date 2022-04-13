@@ -15,7 +15,6 @@ env:
   THIRD_SH: third.sh
   PATCHES_SH: patches.sh
   TIMEZONE: Asia/Shanghai
-  KERNEL: "default"
   RUN: false
 
 jobs:
@@ -121,13 +120,19 @@ jobs:
         if: success() && !cancelled() && env.RUN == 'true'
         run: |
           cd openwrt
-          if [ ${{ env.KERNEL }} != 'default' ]; then
+          HTTPCODE=$(curl -s -w "%{http_code}" "${{ secrets.REMOTE_CONFIG_URL }}/kernel" -o .remote_kernel)
+          KERNEL="$(cat .remote_kernel)"
+          if [ $HTTPCODE != 200 ]; then
+            echo 'Get remote kernel failed!'
+            KERNEL='default'
+          fi
+          if [ $KERNEL != 'default' ]; then
             CURRENT_KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')
             CURRNET_KERNEL_TESTING_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_TESTING_PATCHVER | awk -F ':=' '{print $2}')
-            CONFIG_KERNEL_PATCHVER=$(echo "${{ env.KERNEL }}" | sed 's/\./_/g')
-            sed -i "s/KERNEL_PATCHVER:=$CURRENT_KERNEL_PATCHVER/KERNEL_PATCHVER:=${{ env.KERNEL }}/g" target/linux/x86/Makefile
-            sed -i "s/KERNEL_TESTING_PATCHVER:=${CURRNET_KERNEL_TESTING_PATCHVER}/KERNEL_TESTING_PATCHVER:=${{ env.KERNEL }}/g" target/linux/x86/Makefile
-            sed -i "s/CONFIG_LINUX.*/CONFIG_LINUX_${CONFIG_KERNEL_PATCHVER}=y/g" .config
+            REMOTE_KERNEL_PATCHVER=$(echo "$KERNEL" | sed 's/\./_/g')
+            sed -i "s/KERNEL_PATCHVER:=$CURRENT_KERNEL_PATCHVER/KERNEL_PATCHVER:=$KERNEL/g" target/linux/x86/Makefile
+            sed -i "s/KERNEL_TESTING_PATCHVER:=${CURRNET_KERNEL_TESTING_PATCHVER}/KERNEL_TESTING_PATCHVER:=$KERNEL/g" target/linux/x86/Makefile
+            sed -i "s/CONFIG_LINUX.*/CONFIG_LINUX_${REMOTE_KERNEL_PATCHVER}=y/g" .config
           fi
           KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')
           KERNEL_VERSION=$KERNEL_PATCHVER$(cat include/kernel-"$KERNEL_PATCHVER" | grep LINUX_VERSION | awk -F '= ' '{print $2}')
