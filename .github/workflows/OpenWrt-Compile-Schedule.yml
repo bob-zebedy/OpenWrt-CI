@@ -120,12 +120,7 @@ jobs:
         if: success() && !cancelled() && env.RUN == 'true'
         run: |
           cd openwrt
-          HTTPCODE=$(curl -s -w "%{http_code}" "${{ secrets.REMOTE_CONFIG_URL }}/kernel" -o .remote_kernel)
-          KERNEL="$(cat .remote_kernel)"
-          if [ $HTTPCODE != 200 ]; then
-            echo 'Get remote kernel failed!'
-            KERNEL='default'
-          fi
+          KERNEL=$(curl -s -f "${{ secrets.REMOTE_CONFIG_URL }}/kernel") || KERNEL='default'
           if [ $KERNEL != 'default' ]; then
             CURRENT_KERNEL_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | awk -F ':=' '{print $2}')
             CURRNET_KERNEL_TESTING_PATCHVER=$(cat target/linux/x86/Makefile | grep KERNEL_TESTING_PATCHVER | awk -F ':=' '{print $2}')
