@@ -51,7 +51,7 @@ jobs:
         run: |
           sudo timedatectl set-timezone "$TIMEZONE"
           sudo -E apt-get update
-          sudo -E apt-get -y install $(curl -fsSL https://git.io/openwrt-ubuntu-2004)
+          sudo -E apt-get -y install $(curl -fsSL https://raw.githubusercontent.com/deplives/OpenWrt-Dependency/master/ubuntu-2004)
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir
 
