@@ -10,6 +10,11 @@ on:
         required: true
         default: "default"
 
+      date:
+        description: "date"
+        required: false
+        default: ""
+
 env:
   REPO: https://github.com/deplives/lede.git
   BRANCH: master
@@ -19,6 +24,7 @@ env:
   THIRD_SH: third.sh
   PATCHES_SH: patches.sh
   KERNEL: "${{ github.event.inputs.kernel }}"
+  DATE: "${{ github.event.inputs.date }}"
   TIMEZONE: Asia/Shanghai
 
 jobs:
@@ -91,7 +97,7 @@ jobs:
         run: |
           chmod +x $SECOND_SH
           cd openwrt
-          $GITHUB_WORKSPACE/$SECOND_SH ${{ env.COMMITSHA }}
+          $GITHUB_WORKSPACE/$SECOND_SH ${{ env.COMMITSHA }} ${{ env.DATE }}
 
       - name: Install feeds
         if: success() && !cancelled()
