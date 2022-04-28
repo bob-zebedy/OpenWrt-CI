@@ -4,8 +4,14 @@
 # Run before feeds install
 
 COMMIT_SHA=$1
+BUILD_DATE=$2
+
 if [ -z "$COMMIT_SHA" ]; then
     COMMIT_SHA='Unknown'
+fi
+
+if [ -z "$BUILD_DATE" ]; then
+    BUILD_DATE=$(date +"%Y-%m-%d")
 fi
 
 # Modify default timezone
@@ -60,9 +66,8 @@ sed -i "${line_kernel_version}a\                <tr><td width=\"33%\"><%:Build V
 
 # Add Build Date in Homepage
 echo 'Add Build Date in Homepage...'
-build_date=$(date +"%Y-%m-%d")
 line_build_version=$(grep -n 'Build Version' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
-sed -i "${line_build_version}a\                <tr><td width=\"33%\"><%:Build Date%></td><td>${build_date}</td></tr>" package/lean/autocore/files/x86/index.htm
+sed -i "${line_build_version}a\                <tr><td width=\"33%\"><%:Build Date%></td><td>${BUILD_DATE}</td></tr>" package/lean/autocore/files/x86/index.htm
 
 # Modify hostname in Homepage
 echo 'Modify hostname...'
@@ -90,7 +95,7 @@ echo "██║   ██║██╔═══╝ ██╔══╝  ██║�
 echo "╚██████╔╝██║     ███████╗██║ ╚████║╚███╔███╔╝██║  ██║   ██║    " >>package/base-files/files/etc/banner
 echo " ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═══╝ ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝    " >>package/base-files/files/etc/banner
 echo " ------------------------------------------------------------- " >>package/base-files/files/etc/banner
-echo " %D %C ${build_date} Stable @Bobby                             " >>package/base-files/files/etc/banner
+echo " %D %C ${BUILD_DATE} Stable @Bobby                             " >>package/base-files/files/etc/banner
 echo " $COMMIT_SHA                                                   " >>package/base-files/files/etc/banner
 echo " ------------------------------------------------------------- " >>package/base-files/files/etc/banner
 echo "                                                               " >>package/base-files/files/etc/banner
