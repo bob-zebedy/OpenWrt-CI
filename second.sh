@@ -46,6 +46,7 @@ rm -rf feeds/packages/utils/ttyd && git clone https://github.com/deplives/ttyd.g
 # Modify zzz-default-settings
 echo 'Delete `sed -i 's#downloads.openwrt.org#mirrors.cloud.tencent.com/lede#g' /etc/opkg/distfeeds.conf`...'
 sed -i '/mirrors.cloud.tencent.com/d' package/lean/default-settings/files/zzz-default-settings
+sed -i '/openwrt_luci/d' package/lean/default-settings/files/zzz-default-settings
 
 # Modify admin/status/overview <td id="wan4_i" style="width:16px; text-align:center; padding:3px">
 echo 'Modify admin/status/overview <td id="wan4_i" style="width:16px; text-align:center; padding:3px">...'
