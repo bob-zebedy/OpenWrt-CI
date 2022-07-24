@@ -1,0 +1,24 @@
+--- a/feeds/luci/modules/luci-base/luasrc/sys.lua	2022-07-24 10:21:48.000000000 +0800
++++ b/feeds/luci/modules/luci-base/luasrc/sys.lua	2022-07-24 10:23:25.000000000 +0800
+@@ -394,8 +394,8 @@
+ 	end
+ 
+ 	for line in ps do
+-		local pid, ppid, user, stat, vsz, mem, cpu, cmd = line:match(
+-			"^ *(%d+) +(%d+) +(%S.-%S) +([RSDZTW][W ][<N ]) +(%d+) +(%d+%%) +(%d+%%) +(.+)"
++		local pid, ppid, user, stat, vsz, vszp, cpu, cpup, cmd = line:match(
++			"^ *(%d+) +(%d+) +(%S.-%S) +([RSDZTW][W ][<N ]) +(%d+) +(%d+%%) +(%d+) +(%d+%%) +(.+)"
+ 		)
+ 
+ 		local idx = tonumber(pid)
+@@ -406,8 +406,8 @@
+ 				['USER']    = user,
+ 				['STAT']    = stat,
+ 				['VSZ']     = vsz,
+-				['%MEM']    = mem,
+-				['%CPU']    = cpu,
++				['%MEM']    = vszp,
++				['%CPU']    = cpup,
+ 				['COMMAND'] = cmd
+ 			}
+ 		end
