@@ -22,7 +22,7 @@ env:
   FIRST_SH: first.sh
   SECOND_SH: second.sh
   THIRD_SH: third.sh
-  PATCHES_SH: patches.sh
+  PATCH_SH: patch.sh
   KERNEL: "${{ github.event.inputs.kernel }}"
   DATE: "${{ github.event.inputs.date }}"
   TIMEZONE: Asia/Shanghai
@@ -86,11 +86,13 @@ jobs:
         if: success() && !cancelled()
         run: cd openwrt && ./scripts/feeds update -a
 
-      - name: Run patches.sh
+      - name: Run patch.sh
         if: success() && !cancelled()
         run: |
-          chmod +x $PATCHES_SH
-          $GITHUB_WORKSPACE/$PATCHES_SH
+          chmod +x $PATCH_SH
+          cp -a patches openwrt
+          cd openwrt
+          ${GITHUB_WORKSPACE}/$PATCH_SH
 
       - name: Run second.sh
         if: success() && !cancelled()
