@@ -33,11 +33,6 @@ sed -i 's/192.168.1.1/192.168.50.1/g' package/base-files/files/bin/config_genera
 echo 'Modify default theme...'
 sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
-# Modify default luci-app-turboacc
-# https://github.com/deplives/luci-app-turboacc
-echo 'Modify default luci-app-turboacc...'
-rm -rf package/lean/luci-app-turboacc && git clone https://github.com/deplives/luci-app-turboacc.git package/lean/luci-app-turboacc
-
 # Modify default ttyd
 # https://github.com/deplives/ttyd
 echo 'Modify default ttyd...'
