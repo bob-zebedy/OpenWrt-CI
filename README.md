@@ -10,6 +10,13 @@ UTC 时间每个月末最后一天 18:00 自动编译
 
 - Kernel: 32 MB; rootfs: 256 MB
 - 替换/新增了某些默认插件
+    - 替换默认 ttyd
+    - 替换默认 luci-ttyd
+    - 新增 阿里云DDNS
+    - 新增 阿里云盘WebDAV
+    - 新增 IPsec VPN
+    - 新增 MosDNS
+    - 新增 国际互联网
 - 修改默认主题为 argon
 - 修改默认 NTP 服务器
     - ntp.ntsc.ac.cn 
