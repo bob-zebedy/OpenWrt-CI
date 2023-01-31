@@ -159,7 +159,7 @@ jobs:
         run: |
           cd openwrt/bin/targets/*/*
           shopt -s extglob
-          rm -rf !(*.img|*.vmdk|*.bin)
+          rm -rf !(*.img|*.vmdk)
           shopt -u extglob
           sha256sum * > sha256sum.txt
           cp /workdir/openwrt/.config $CONFIG
