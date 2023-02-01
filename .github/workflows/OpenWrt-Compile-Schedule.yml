@@ -4,7 +4,7 @@ name: OpenWrt Compile Schedule
 
 on:
   schedule:
-    - cron: "0 18 */1 * *"
+    - cron: "0 1 1 * *"
 
 env:
   REPO: https://github.com/deplives/lede.git
@@ -15,7 +15,6 @@ env:
   THIRD_SH: third.sh
   PATCH_SH: patch.sh
   TIMEZONE: Asia/Shanghai
-  RUN: false
 
 jobs:
   Compile:
@@ -28,14 +27,8 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Check date
-        run: |
-          if [ "01" = "$(date +%d -d '+1day')" ]; then
-            echo "RUN=true" >> $GITHUB_ENV
-          fi
-
       - name: Space cleanup
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php* android*
           sudo rm -rf /etc/apt/sources.list.d /usr/share/dotnet /usr/local/lib/android /etc/mysql /etc/php /opt/ghc
@@ -47,7 +40,7 @@ jobs:
       - name: Install dependencies
         env:
           DEBIAN_FRONTEND: noninteractive
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           sudo timedatectl set-timezone "$TIMEZONE"
           sudo -E apt-get update
@@ -57,7 +50,7 @@ jobs:
 
       - name: Clone source code
         working-directory: /workdir
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           git clone $REPO -b $BRANCH openwrt
           ln -sf /workdir/openwrt ${GITHUB_WORKSPACE}/openwrt
@@ -66,24 +59,24 @@ jobs:
 
       - name: Cache
         uses: deplives/cacheopenwrt@main
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         with:
           ccache: true
           prefix: ${{ github.workspace }}/openwrt
 
       - name: Run first.sh
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           chmod +x $FIRST_SH
           cd openwrt
           ${GITHUB_WORKSPACE}/$FIRST_SH
 
       - name: Update feeds
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: cd openwrt && ./scripts/feeds update -a
 
       - name: Run patch.sh
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           chmod +x $PATCH_SH
           cp -a patches openwrt
@@ -91,25 +84,25 @@ jobs:
           ${GITHUB_WORKSPACE}/$PATCH_SH
 
       - name: Run second.sh
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           chmod +x $SECOND_SH
           cd openwrt
           ${GITHUB_WORKSPACE}/$SECOND_SH ${{ env.COMMITSHA }}
 
       - name: Install feeds
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: cd openwrt && ./scripts/feeds install -a
 
       - name: Run third.sh
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           chmod +x $THIRD_SH
           cd openwrt
           ${GITHUB_WORKSPACE}/$THIRD_SH
 
       - name: Restore configuration
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           [ -e files ] && mv files openwrt/files
           HTTPCODE=$(curl -s -w "%{http_code}" "${{ secrets.REMOTE_CONFIG_URL }}/$CONFIG" -o openwrt/.config)
@@ -119,7 +112,7 @@ jobs:
           fi
 
       - name: Switch kernel
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           cd openwrt
           KERNEL=$(curl -s -f "${{ secrets.REMOTE_CONFIG_URL }}/kernel") || KERNEL='default'
@@ -136,7 +129,7 @@ jobs:
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
 
       - name: Download package
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           cd openwrt
           make defconfig
@@ -144,7 +137,7 @@ jobs:
           find dl -size -1024c -exec rm -f {} \;
 
       - name: Compile firmware
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           echo "Start compile ${{ env.KERNEL_VERSION }} ${{ env.COMMITSHA }}"
           curl -s "https://api.telegram.org/${{ secrets.TELEGRAM_TOKEN }}/sendMessage" --header "Content-Type: application/json" --data-raw "{\"chat_id\": \"${{ secrets.TELEGRAM_TO }}\",\"text\": \"OpenWrt 自动触发编译(stable)\n状态: 正在进行\nKernel Version: ${{ env.KERNEL_VERSION }}\nCommit SHA: ${{ env.COMMITSHA }}\"}"
@@ -152,7 +145,7 @@ jobs:
           make -j$(nproc) || make -j1 V=sc
 
       - name: Organize files
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           cd openwrt/bin/targets/*/*
           shopt -s extglob
@@ -164,7 +157,7 @@ jobs:
 
       - name: Generate release tag
         id: tag
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           echo "::set-output name=release_tag::OpenWrt-$(date +'%Y%m%d')"
           touch release.txt
@@ -173,7 +166,7 @@ jobs:
 
       - name: Release
         uses: softprops/action-gh-release@v1
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -182,12 +175,12 @@ jobs:
           files: ${{ env.FIRMWARE }}/*
 
       - name: Compile has succeeded
-        if: success() && !cancelled() && env.RUN == 'true'
+        if: success() && !cancelled()
         run: |
           curl -s "https://api.telegram.org/${{ secrets.TELEGRAM_TOKEN }}/sendMessage" --header "Content-Type: application/json" --data-raw "{\"chat_id\": \"${{ secrets.TELEGRAM_TO }}\",\"text\": \"OpenWrt 自动触发编译(stable)\n状态: 成功\nKernel Version: ${{ env.KERNEL_VERSION }}\nCommit SHA: ${{ env.COMMITSHA }}\"}"
 
       - name: Compile has failed
-        if: failure() && env.RUN == 'true'
+        if: failure()
         run: |
           curl -s "https://api.telegram.org/${{ secrets.TELEGRAM_TOKEN }}/sendMessage" --header "Content-Type: application/json" --data-raw "{\"chat_id\": \"${{ secrets.TELEGRAM_TO }}\",\"text\": \"OpenWrt 自动触发编译(stable)\n状态: 失败\nKernel Version: ${{ env.KERNEL_VERSION }}\nCommit SHA: ${{ env.COMMITSHA }}\"}"
 
