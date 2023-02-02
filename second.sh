@@ -56,14 +56,14 @@ echo 'Modify localtime in Homepage...'
 sed -i 's/os.date()/os.date("%Y-%m-%d %H:%M:%S")/g' package/lean/autocore/files/x86/index.htm
 
 # Add Build Version in Homepage
-echo 'Add Build Version in Homepage...'
+echo 'Add Code Version in Homepage...'
 line_kernel_version=$(grep -n 'Kernel Version' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
-sed -i "${line_kernel_version}a\                <tr><td width=\"33%\"><%:Build Version%></td><td>Stable</td></tr>" package/lean/autocore/files/x86/index.htm
+sed -i "${line_kernel_version}a\                <tr><td width=\"33%\"><%:Code Version%></td><td>${COMMIT_SHA}</td></tr>" package/lean/autocore/files/x86/index.htm
 
 # Add Build Date in Homepage
 echo 'Add Build Date in Homepage...'
-line_build_version=$(grep -n 'Build Version' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
-sed -i "${line_build_version}a\                <tr><td width=\"33%\"><%:Build Date%></td><td>${BUILD_DATE}</td></tr>" package/lean/autocore/files/x86/index.htm
+line_code_version=$(grep -n 'Build Version' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
+sed -i "${line_code_version}a\                <tr><td width=\"33%\"><%:Build Date%></td><td>${BUILD_DATE}</td></tr>" package/lean/autocore/files/x86/index.htm
 
 # Modify hostname in Homepage
 echo 'Modify hostname...'
