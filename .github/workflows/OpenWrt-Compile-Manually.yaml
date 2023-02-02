@@ -68,13 +68,6 @@ jobs:
           cd openwrt
           echo "COMMITSHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
-      - name: Cache
-        uses: deplives/cacheopenwrt@main
-        if: success() && !cancelled()
-        with:
-          ccache: true
-          prefix: ${{ github.workspace }}/openwrt
-
       - name: Run first.sh
         if: success() && !cancelled()
         run: |
