@@ -55,7 +55,7 @@ sed -i 's/<td id="wan6_i" style="width:16px; text-align:center; padding:3px">/<t
 echo 'Modify localtime in Homepage...'
 sed -i 's/os.date()/os.date("%Y-%m-%d %H:%M:%S")/g' package/lean/autocore/files/x86/index.htm
 
-# Add Build Version in Homepage
+# Add Code Version in Homepage
 echo 'Add Code Version in Homepage...'
 line_kernel_version=$(grep -n 'Kernel Version' package/lean/autocore/files/x86/index.htm | awk -F ':' '{print $1}')
 sed -i "${line_kernel_version}a\                <tr><td width=\"33%\"><%:Code Version%></td><td>${COMMIT_SHA}</td></tr>" package/lean/autocore/files/x86/index.htm
