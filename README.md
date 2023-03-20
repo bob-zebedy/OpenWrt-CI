@@ -12,11 +12,11 @@ UTC 时间每个月末最后一天 18:00 自动编译
 - 替换/新增了某些默认插件
     - 替换默认 ttyd
     - 替换默认 luci-ttyd
-    - 新增 阿里云DDNS
-    - 新增 阿里云盘WebDAV
+    - 替换默认 luci-proto-wireguard
+    - 新增 阿里云 DDNS
     - 新增 IPsec VPN
-    - 新增 MosDNS
     - 新增 国际互联网
+    - 新增 WireGuard
 - 修改默认主题为 argon
 - 修改默认 NTP 服务器
     - ntp.ntsc.ac.cn 
@@ -25,5 +25,5 @@ UTC 时间每个月末最后一天 18:00 自动编译
     - pool.ntp.org
 - 修改默认时区为 Asia/Shanghai
 - 修改默认 LAN IP 为 192.168.50.1
-- 首页新增 '编译版本' 和 '编译日期'
+- 首页新增 '代码版本' 和 '编译日期'
 - 修改默认 console banner 样式
