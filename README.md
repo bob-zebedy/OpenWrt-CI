@@ -8,7 +8,7 @@ UTC 时间每个月末最后一天 18:00 自动编译
 
 ## 固件特点
 
-- Kernel: 32 MB; rootfs: 256 MB
+- Kernel: 32 MB; Rootfs: 256 MB
 - 替换/新增了某些默认插件
     - 替换默认 ttyd
     - 替换默认 luci-ttyd
