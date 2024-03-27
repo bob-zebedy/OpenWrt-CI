@@ -1,5 +1,5 @@
 #!/bin/bash
-# https://github.com/deplives/OpenWrt-CI
+# https://github.com/bob-zebedy/OpenWrt-CI
 
 # Run before feeds install
 
@@ -34,14 +34,14 @@ echo 'Modify default theme...'
 sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
 # Modify default luci-proto-wireguard
-# https://github.com/deplives/luci-proto-wireguard
+# https://github.com/bob-zebedy/luci-proto-wireguard
 echo 'Modify default luci-proto-wireguard...'
-rm -rf feeds/luci/protocols/luci-proto-wireguard && git clone https://github.com/deplives/luci-proto-wireguard.git feeds/luci/protocols/luci-proto-wireguard
+rm -rf feeds/luci/protocols/luci-proto-wireguard && git clone https://github.com/bob-zebedy/luci-proto-wireguard.git feeds/luci/protocols/luci-proto-wireguard
 
 # Modify default ttyd
-# https://github.com/deplives/ttyd
+# https://github.com/bob-zebedy/ttyd
 echo 'Modify default ttyd...'
-rm -rf feeds/packages/utils/ttyd && git clone https://github.com/deplives/ttyd.git feeds/packages/utils/ttyd
+rm -rf feeds/packages/utils/ttyd && git clone https://github.com/bob-zebedy/ttyd.git feeds/packages/utils/ttyd
 
 # Modify zzz-default-settings
 echo 'Delete `sed -i 's#downloads.openwrt.org#mirrors.cloud.tencent.com/lede#g' /etc/opkg/distfeeds.conf`...'

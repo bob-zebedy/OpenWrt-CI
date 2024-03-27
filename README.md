@@ -1,6 +1,6 @@
 # OpenWrt-CI 
 
-![Release Date](https://img.shields.io/github/release-date/deplives/OpenWrt-CI?label=Release%20Date&style=flat-square)
+![Release Date](https://img.shields.io/github/release-date/bob-zebedy/OpenWrt-CI?label=Release%20Date&style=flat-square)
 
 自用 x86 软路由 OpenWrt 稳定版固件
 

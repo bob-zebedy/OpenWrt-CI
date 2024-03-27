@@ -1,4 +1,4 @@
-# https://github.com/deplives/OpenWrt-CI
+# https://github.com/bob-zebedy/OpenWrt-CI
 
 name: OpenWrt Compile Manually
 
@@ -16,7 +16,7 @@ on:
         default: ""
 
 env:
-  REPO: https://github.com/deplives/lede.git
+  REPO: https://github.com/bob-zebedy/lede.git
   BRANCH: master
   CONFIG: x86.stable.config
   FIRST_SH: first.sh
@@ -80,7 +80,7 @@ jobs:
         run: |
           sudo timedatectl set-timezone "$TIMEZONE"
           sudo -E apt-get update
-          sudo -E apt-get -y install $(curl -fsSL https://raw.githubusercontent.com/deplives/openwrt-rely/main/ubuntu)
+          sudo -E apt-get -y install $(curl -fsSL https://raw.githubusercontent.com/bob-zebedy/openwrt-rely/main/ubuntu)
           sudo mkdir -p /mnt/workdir
           sudo chown $USER:$GROUPS /mnt/workdir
 
