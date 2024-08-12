@@ -1,0 +1,13 @@
+--- a/feeds/luci/protocols/luci-proto-ipv6/luasrc/model/cbi/admin_network/proto_dhcpv6.lua	2024-07-09 14:01:13.669941987 +0800
++++ b/feeds/luci/protocols/luci-proto-ipv6/luasrc/model/cbi/admin_network/proto_dhcpv6.lua	2024-07-09 14:00:59.146876330 +0800
+@@ -6,9 +6,9 @@
+ 
+ local o = section:taboption("general", ListValue, "reqaddress",
+ 	translate("Request IPv6-address"))
+-o:value("try")
+-o:value("force")
+-o:value("none", "disabled")
++o:value("try", translate("try"))
++o:value("force", translate("force"))
++o:value("none", translate("disabled"))
+ o.default = "try"
